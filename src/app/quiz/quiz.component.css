@@ -1,0 +1,40 @@
+input.ng-invalid.ng-touched {
+  border: 1px solid red;
+}
+
+.QuestionBorder {
+  border:1px solid #cccccc;
+  margin-bottom:10px;
+  margin-top:10px;
+  padding-top:10px;
+  padding-bottom:4px;
+  padding-left:20px;
+}
+
+.CorrectAnsBorder {
+  border: 1px solid #cccccc;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 10px;
+  background-color: #ffffff;
+}
+
+.InCorrectAnsBorder {
+  border: 1px solid #cccccc;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 10px;
+  background-color: #fac4c4;
+}
+
+.noBorder {
+  border: 1px solid #ffffff;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 10px;
+  background-color: #ffffff;
+}
+
+.angular-with-newlines {
+  white-space: pre-wrap;
+}

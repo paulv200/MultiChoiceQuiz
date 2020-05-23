@@ -1,0 +1,219 @@
+<div class="row" style="background-color:#e4Fcff;">
+
+  <div class="col-md-4 col-sm-6"><h4>{{ this.quizTitle }}</h4></div>
+
+  <div class="col-md-2 col-sm=6"><strong>Quiz: {{ this.quizIDParam }}</strong></div>
+
+  <div class="col-md-6 col-sm=12"><strong>{{ noOfQuestions() }} questions</strong></div>
+
+  <div class="col-md-12"><p>{{ this.quizDescription }}</p></div>
+
+</div>
+
+
+<!--  ============================================================= -->
+<div *ngIf="started(); then ShowForm else ShowStartButton"></div>
+<ng-template #ShowStartButton>
+  <div class="row">
+    <div class="col-md-12"><button type="button" class="btn btn-info" (click)="onStart()">Start Quiz</button></div>
+  </div>
+</ng-template>
+
+<!--  ============================================================= -->
+<ng-template #ShowForm>
+
+  <form [formGroup]="questionForm" (ngSubmit)="onSubmit()">
+
+    <!-- -------------------------------------- -->
+    <div class="row" *ngIf="showCorrectAnswer" style="background-color:#e4Fcff;">
+      <div class="col-md-12">
+        <div>
+          <p class="CorrectAnsBorder"><i class="fa fa-check fa-1x" aria-hidden="true"></i>&nbsp;<span class="angular-with-newlines">{{ this.correctAnswerText }}</span></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- -------------------------------------- -->
+    <div class="row" *ngIf="showInCorrectAnswer" style="background-color:#e4Fcff;">
+      <div class="col-md-12">
+        <div>
+          <p class="InCorrectAnsBorder"><i class="fa fa-times fa-1x" aria-hidden="true"></i>&nbsp;<span class="angular-with-newlines">{{ this.inCorrectAnswerText }}</span></p>
+        </div>
+      </div>
+    </div>
+
+ 
+
+    <!-- -------------------------------------- -->
+    <div *ngIf="showTitle; then ShowTheTitle"></div>
+    <ng-template #ShowTheTitle>
+
+      <div class="row" style="background-color:#f7f5f4;">
+        <div class="col-md-12">
+          <strong>Question {{ this.questionPosition + 1}} of {{ noOfQuestions() }}:</strong><br/>
+            <span class="angular-with-newlines">{{ this.theQuestion.questionTitle }}</span>
+        </div>
+      </div>   
+
+    </ng-template>
+
+    <!-- -------------------------------------- -->
+    <div *ngIf="showResults; then ShowTheResults else ShowTheQuestion"></div>
+    <div *ngIf="!showResults; then ShowTheQuestion1"></div>
+
+    <ng-template #ShowTheQuestion>
+
+      <div class="form-group">
+
+        <div class="row">
+
+          <div class="col-md-12">
+
+            <div class="radio" *ngFor="let questionitem of this.theQuestion.questions">
+              <div class="QuestionBorder">
+                <label>
+                  <input type="radio"
+                         name="question"
+                         formControlName="question"
+                         [value]="questionitem[0]">
+                  {{ questionitem[0] }}
+                </label>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- -------------------------------------- -->
+        <div *ngIf="isRadioValid(); then ValidRadio else InValidRadio"></div>
+
+        <ng-template #ValidRadio>
+          <p>&nbsp;</p>
+        </ng-template>
+
+        <ng-template #InValidRadio>
+          <p>Please make a selection!</p>
+        </ng-template>
+
+      </div>
+
+    </ng-template>
+
+    <!-- -------------------------------------- -->
+    <ng-template #ShowTheResults>
+
+      <div class="row">
+        <div class="col-md-12" style="background-color:#e4Fcff;padding-top:15px;">
+          <p><strong>You scored {{ getNoOfCorrectAnswers() }} out of {{ noOfQuestions() }}</strong></p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">&nbsp;</div>
+      </div>
+
+      <div *ngIf="!isZeroIncorrectAnswers()">
+
+        <div class="row">
+          <div class="col-md-12"><p><strong>You skipped these question(s) or did not answer correctly at the first attempt:</strong></p></div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-12">&nbsp;</div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-12" *ngFor="let answeritem of this.inCorrectAnswerArray">
+            <p><strong>[{{ answeritem.questionNo }}]</strong>&nbsp;&nbsp;<span class="angular-with-newlines">{{ answeritem.questionTitle }}</span></p>
+          </div>
+        </div>
+
+      </div>
+
+    </ng-template>
+
+    <!-- -------------------------------------- -->
+    <ng-template #ShowTheQuestion1>
+     
+
+      <div class="row" style="background-color:#e4Fcff">
+
+         <div class="col-xs-6 col-sm-6 col-md-4">
+
+            <!-- -------------------------------------- -->
+            <div *ngIf="showSubmitButton; then ShowSubmit"></div>
+            <ng-template #ShowSubmit>
+              <div style="padding-top:8px;padding-bottom:8px;">
+                <button class="btn btn-success"
+                        type="submit"
+                        [disabled]="!isRadioValid()">
+                  Check Answer
+                </button>
+              </div>
+            </ng-template>
+
+            <!-- -------------------------------------- -->
+            <div *ngIf="showNextButton; then ShowNext"></div>
+            <ng-template #ShowNext>
+              <div style="padding-top:8px;padding-bottom:8px;">
+                <button class="btn btn-success"
+                        type="button"
+                        (click)="onNextQuestion()">
+                  Next Question >>
+                </button>
+              </div>
+            </ng-template>
+
+            <!-- -------------------------------------- -->
+            <div *ngIf="showResultButton; then ShowResult"></div>
+            <ng-template #ShowResult>
+              <div style="padding-top:8px;padding-bottom:8px;">
+                <button class="btn btn-success"
+                        type="button"
+                        (click)="onShowResults()">
+                  Show Results >>
+                </button>
+              </div>
+            </ng-template>
+
+         </div>
+
+         <div class="col-xs-6 col-sm-6 col-md-8">
+            <div style="padding-top:8px;padding-bottom:8px;">
+              <button class="btn btn-success"
+                      type="button"
+                      (click)="onSkipQuestion()">
+                Skip Question
+              </button>
+            </div>
+         </div>
+
+      </div>   
+
+      <div class="row">
+        <div class="col-md-12">&nbsp;</div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <button class="btn btn-info"
+                  type="button"
+                  (click)="onStart()">
+            Reset Quiz
+          </button>
+        </div>
+      </div>
+
+    </ng-template>
+
+  </form>
+
+  <div class="row">
+      <div class="col-md-12">&nbsp;</div>
+  </div>
+
+</ng-template>
+
+
+
